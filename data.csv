@@ -49,3 +49,4 @@ layer_height,wall_thickness,infill_density,infill_pattern,nozzle_temperature,bed
 0.2,5,60,honeycomb,210,70,40,pla,50,278,30,3.2
 0.2,7,40,grid,215,75,40,pla,75,244,29,3.2
 0.2,3,60,honeycomb,220,80,40,pla,100,220,27,3.1
+
