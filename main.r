@@ -1,3 +1,3 @@
 data <- read.csv(".\\data.csv")
-print(head(data, 5))
+View(data)
 print("Anh gymer lỏ")
