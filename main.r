@@ -4,5 +4,15 @@ data2 <- data.frame(
   data[4], data[5], data[6],
   data[7], data[8], data[9]
 )
-print(apply(is.na(data2), 2, which))
+pow <- function(n, k) {
+  if ((n == 1)  || (k == 1)) {
+    return(n)
+  } else if (k %% 2 == 1) {
+    return(n * pow(n, as.integer(k / 2)) * pow(n, as.integer(k / 2)))
+  } else {
+    return(pow(n, as.integer(k / 2)) * pow(n, as.integer(k / 2)))
+  }
+}
+y <- pow(2L, 30L)
+print(y)
 print("Anh gymer lỏ")
