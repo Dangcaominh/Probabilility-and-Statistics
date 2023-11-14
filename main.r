@@ -13,7 +13,7 @@ pow <- function(n, k) {
     return(pow(n, as.integer(k / 2)) * pow(n, as.integer(k / 2)))
   }
 }
-# Tính 2 mũ 30
+# Tính 2 mũ 31
 y <- pow(2, 30)
 print(y)
 print("Anh gymer lỏ")
