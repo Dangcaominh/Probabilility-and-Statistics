@@ -1,21 +1,39 @@
-options(digits = 20)
+options(digits = 7)
 data <- read.csv(".\\data.csv")
 data2 <- data.frame(
   data[1], data[2], data[3],
-  data[4], data[5], data[6],
-  data[7], data[8], data[9]
+  data[5], data[6], data[7],
+  data[9]
 )
-# Hàm tính n mũ k với độ phức tạp O(log k)
-pow <- function(n, k) {
-  if ((n == 1)  || (k == 1)) {
-    return(n)
-  } else if (k %% 2 == 1) {
-    return(n * pow(n, as.integer(k / 2)) * pow(n, as.integer(k / 2)))
-  } else {
-    return(pow(n, as.integer(k / 2)) * pow(n, as.integer(k / 2)))
+View(data2)
+# Chuyển đổi tất cả các ô bằng 0 thành 0.0000001
+# Độ phức tạp O(xy)
+replace_zero <- function(datainput) {
+  x <- nrow(datainput)
+  y <- ncol(datainput)
+  for (i in 1:x) {
+    for (j in 1:y) {
+      if (datainput[i, j] == 0) {
+        datainput[i, j] <- 0.0000001
+      }
+    }
   }
+  return(datainput)
 }
-# Tính 2 mũ 64
-y <- pow(2, 64)
-print(y)
+# Chuyển đổi giá trị ở tất cả các ô thành log của nó
+# Độ phức tạp O(xy)
+log_conversion <- function(datainput){
+  x <- nrow(datainput)
+  y <- ncol(datainput)
+  for (i in 1:x) {
+    for (j in 1:y) {
+      datainput[i, j] <- log(datainput[i, j])
+    }
+  }
+  return(datainput)
+}
+data3 <- replace_zero(data2)
+data4 <- log_conversion(data3)
+View(data3)
+View(data4)
 print("Anh gymer lỏ")
