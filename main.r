@@ -12,10 +12,20 @@ data2 <- data.frame(
 View(data2)
 
 #-------------------------------------------------------------------------------
+# Lấy tên của các cột
+# Giá trị nhập vào: data frame
+# Giá trị trả về: array
+# Độ phức tạp: O(xy)
+get_col_name <- function(datainput) {
+  col_names <- colnames(datainput)
+  return(col_names)
+}
+
+#-------------------------------------------------------------------------------
 # Chuyển đổi tất cả các ô bằng 0 thành 0.0000001
 # Giá trị nhập vào: data frame
 # Giá trị trả về: data frame
-# Độ phức tạp: O(xy)
+# Độ phức tạp: O(y)
 replace_zero <- function(datainput) {
   x <- nrow(datainput)
   y <- ncol(datainput)
@@ -48,25 +58,25 @@ log_conversion <- function(datainput) {
 #-------------------------------------------------------------------------------
 # Hàm tính trung bình
 # Giá trị nhập vào: data frame
-# Giá trị trả về: array
+# Giá trị trả về: data frame
 # Độ phức tạp: O(xy)
 mean <- function(datainput) {
   # Trả về giá trị trung bình của từng cột
   x <- nrow(datainput)
   y <- ncol(datainput)
-  array <- vector("numeric", y)
+  mean <- vector("numeric", y)
   for (i in 1:x) {
     for (j in 1:y) {
-      array[j] <- array[j] + datainput[i, j] / x
+      mean[j] <- mean[j] + datainput[i, j] / x
     }
   }
-  return(array)
+  return(mean)
 }
 
 #-------------------------------------------------------------------------------
 # Hàm tính trung vị
 # Giá trị nhập vào: data frame
-# Giá trị trả về: array
+# Giá trị trả về: data frame
 # Độ phức tạp: O(xlog(x)y)
 median <- function(datainput) {
   # Trả về giá trị trung vị của từng cột
@@ -77,10 +87,10 @@ median <- function(datainput) {
     # array(unlist(datainput[i])) để chuyển đổi data frame thành array
     sorted_array <- sort(array(unlist(datainput[i])))
     if (x %% 2 == 1) {
-      array[i] <- sorted_array[as.integer(y / 2) + 1]
+      array[i] <- sorted_array[as.integer(x / 2) + 1]
     } else {
-      array[i] <- (sorted_array[as.integer(y / 2)]) / 2
-      array[i] <- array[i] + (sorted_array[as.integer(y / 2) + 1]) / 2
+      array[i] <- (sorted_array[as.integer(x / 2)]) / 2
+      array[i] <- array[i] + (sorted_array[as.integer(x / 2) + 1]) / 2
     }
   }
   return(array)
@@ -89,5 +99,7 @@ data3 <- replace_zero(data2)
 data4 <- log_conversion(data3)
 mean <- mean(data2)
 median <- median(data2)
-View(data.frame(mean, median))
+col.names <- get_col_name(data2)
+table <- data.frame(col.names, mean, median)
+View(table)
 print("Anh gymer lỏ")
