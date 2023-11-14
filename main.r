@@ -1,9 +1,11 @@
+options(digits = 20)
 data <- read.csv(".\\data.csv")
 data2 <- data.frame(
   data[1], data[2], data[3],
   data[4], data[5], data[6],
   data[7], data[8], data[9]
 )
+# Hàm tính n mũ k với độ phức tạp O(log k)
 pow <- function(n, k) {
   if ((n == 1)  || (k == 1)) {
     return(n)
@@ -13,7 +15,7 @@ pow <- function(n, k) {
     return(pow(n, as.integer(k / 2)) * pow(n, as.integer(k / 2)))
   }
 }
-# Tính 2 mũ 33
-y <- pow(2, 30)
+# Tính 2 mũ 64
+y <- pow(2, 64)
 print(y)
 print("Anh gymer lỏ")
