@@ -230,7 +230,6 @@ max <- max(data4)
 sd <- standard_derivation(data4)
 table <- data.frame(col.names, mean, median, min, max, sd)
 View(table)
-<<<<<<< HEAD
 
 # par(mfrow = c(1, 4))
 # # Histogram của layer height
