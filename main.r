@@ -278,7 +278,3 @@ print(
     ) +
     scale_fill_gradientn(colors = color_palette)
 )
-=======
-print("Anh gymer lỏ")
-print("Tottenham 1-4 Chelsea")
->>>>>>> 0236eb256e53953248e24d2ab599d5c540ac1736
