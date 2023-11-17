@@ -1,4 +1,6 @@
 options(scipen = 99)
+library(ggplot2)
+library(reshape2)
 # Vào dữ liệu
 data <- read.csv(".\\data.csv")
 
@@ -29,6 +31,58 @@ get_col_name <- function(datainput) {
   col_names <- colnames(datainput)
   return(col_names)
 }
+
+#-------------------------------------------------------------------------------
+# Nhập vào hai vector a và b độ dài n
+# Thay tất cả giá trị a[i] trong data frame thành b[i] với mọi i
+# Giá trị nhập vào: data frame, hai vector
+# Giá trị trả về: data frame
+# Độ phức tạp: O(xyn)
+replace_value <- function(datainput, a, b) {
+  n <- length(a)
+  b_data_type <- class(b[1])
+  x <- nrow(datainput)
+  y <- ncol(datainput)
+  if(n == 1){
+    for (i in 1:x) {
+      for (j in 1:y) {
+        if (datainput[i, j] == a) {
+          datainput[i, j] <- b
+        }
+      }
+    }
+  } else {
+    # List chứa những cột bị thay đổi dữ liệu
+    changed_j_index <- list()
+    for (t in 1:n) {
+      for (j in 1:y) {
+        # Cờ báo hiệu giá trị j đã được append hay chưa
+        is_appended <- 0
+        for (i in 1:x) {
+          if (datainput[i, j] == a[t]) {
+            if (is_appended == 0){
+              changed_j_index <- append(changed_j_index, j)
+              is_appended <- 1
+            }
+            datainput[i, j] <- b[t]
+          }
+        }
+      }
+    }
+    for (j in changed_j_index) {
+      datainput[, j] <- switch(b_data_type,
+        numeric = as.numeric(datainput[, j]),
+        character = as.character(datainput[, j]),
+        factor = as.factor(datainput[, j]),
+        logical = as.logical(datainput[, j]),
+        datainput[, j]
+      )
+      print(class(datainput[1, j]))
+    }
+  }
+  return(datainput)
+}
+
 
 #-------------------------------------------------------------------------------
 # Chuyển đổi tất cả các ô bằng 0 thành 0.0000001
@@ -164,7 +218,8 @@ max <- function(datainput) {
   return(array)
 }
 
-data3 <- replace_zero(data2)
+data3 <- replace_value(data2, 0, 0.0000001)
+View(data3)
 data4 <- log_conversion(data3)
 View(data4)
 col.names <- get_col_name(data2)
@@ -175,5 +230,50 @@ max <- max(data4)
 sd <- standard_derivation(data4)
 table <- data.frame(col.names, mean, median, min, max, sd)
 View(table)
-print("Anh gymer lỏ")
-print("Tottenham 1-5 Chelsea")
+
+# par(mfrow = c(1, 4))
+# # Histogram của layer height
+# hist(data3[, "wall_thickness"],
+#   xlab = "wall_thickness",
+#   main = "Histogram of wall_thickness"
+# )
+# hist(data4[, "wall_thickness"],
+#   xlab = "log(wall_thickness)",
+#   main = "Đồ thị Histogram of log(wall_thickness)"
+# )
+
+# # Box plot của layer height và wall thickness
+# boxplot(layer_height ~ wall_thickness,
+#   main = "Boxplot of LH for each WT",
+#   data = data3
+# )
+# boxplot(layer_height ~ wall_thickness,
+#   main = "Boxplot of log(LH) for each log(WT)",
+#   data = data4
+# )
+
+heatmap_data <- replace_value(
+  data,
+  c("grid", "honeycomb", "abs", "pla"),
+  c(0, 1, 0, 1)
+)
+# Define a custom color palette
+color_palette <- c("#00ffff", "#8877ff", "#ff00ff")
+
+corr_matr <- round(cor(heatmap_data), 2)
+melted_corr_matr <- melt(corr_matr)
+print(
+  ggplot(data = melted_corr_matr, aes(
+    x = Var1,
+    y = Var2, fill = value
+  )) +
+    geom_tile(color = "white", size = 0.5) +
+    geom_text(
+      aes(Var2,
+        Var1,
+        label = value
+      ),
+      color = "white", size = 4
+    ) +
+    scale_fill_gradientn(colors = color_palette)
+)
