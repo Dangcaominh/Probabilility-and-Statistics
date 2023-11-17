@@ -43,7 +43,7 @@ replace_value <- function(datainput, a, b) {
   b_data_type <- class(b[1])
   x <- nrow(datainput)
   y <- ncol(datainput)
-  if(n == 1){
+  if (n == 1) {
     for (i in 1:x) {
       for (j in 1:y) {
         if (datainput[i, j] == a) {
@@ -60,7 +60,7 @@ replace_value <- function(datainput, a, b) {
         is_appended <- 0
         for (i in 1:x) {
           if (datainput[i, j] == a[t]) {
-            if (is_appended == 0){
+            if (is_appended == 0) {
               changed_j_index <- append(changed_j_index, j)
               is_appended <- 1
             }
@@ -231,26 +231,28 @@ sd <- standard_derivation(data4)
 table <- data.frame(col.names, mean, median, min, max, sd)
 View(table)
 
-# par(mfrow = c(1, 4))
-# # Histogram của layer height
-# hist(data3[, "wall_thickness"],
-#   xlab = "wall_thickness",
-#   main = "Histogram of wall_thickness"
-# )
-# hist(data4[, "wall_thickness"],
-#   xlab = "log(wall_thickness)",
-#   main = "Đồ thị Histogram of log(wall_thickness)"
-# )
-
-# # Box plot của layer height và wall thickness
-# boxplot(layer_height ~ wall_thickness,
-#   main = "Boxplot of LH for each WT",
-#   data = data3
-# )
-# boxplot(layer_height ~ wall_thickness,
-#   main = "Boxplot of log(LH) for each log(WT)",
-#   data = data4
-# )
+dev.new()
+# Histogram của layer height
+hist(data3[, "wall_thickness"],
+  xlab = "wall_thickness",
+  main = "Histogram of wall_thickness"
+)
+dev.new()
+hist(data4[, "wall_thickness"],
+  xlab = "log(wall_thickness)",
+  main = "Đồ thị Histogram of log(wall_thickness)"
+)
+dev.new()
+# Box plot của layer height và wall thickness
+boxplot(layer_height ~ wall_thickness,
+  main = "Boxplot of LH for each WT",
+  data = data3
+)
+dev.new()
+boxplot(layer_height ~ wall_thickness,
+  main = "Boxplot of log(LH) for each log(WT)",
+  data = data4
+)
 
 heatmap_data <- replace_value(
   data,
@@ -262,6 +264,7 @@ color_palette <- c("#00ffff", "#8877ff", "#ff00ff")
 
 corr_matr <- round(cor(heatmap_data), 2)
 melted_corr_matr <- melt(corr_matr)
+dev.new()
 print(
   ggplot(data = melted_corr_matr, aes(
     x = Var1,
