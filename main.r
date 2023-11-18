@@ -77,26 +77,6 @@ replace_value <- function(datainput, a, b) {
         logical = as.logical(datainput[, j]),
         datainput[, j]
       )
-      print(class(datainput[1, j]))
-    }
-  }
-  return(datainput)
-}
-
-
-#-------------------------------------------------------------------------------
-# Chuyển đổi tất cả các ô bằng 0 thành 0.0000001
-# Giá trị nhập vào: data frame
-# Giá trị trả về: data frame
-# Độ phức tạp: O(xy)
-replace_zero <- function(datainput) {
-  x <- nrow(datainput)
-  y <- ncol(datainput)
-  for (i in 1:x) {
-    for (j in 1:y) {
-      if (datainput[i, j] == 0) {
-        datainput[i, j] <- 0.0000001
-      }
     }
   }
   return(datainput)
@@ -261,7 +241,6 @@ heatmap_data <- replace_value(
 )
 # Define a custom color palette
 color_palette <- c("#00ffff", "#8877ff", "#ff00ff")
-
 corr_matr <- round(cor(heatmap_data), 2)
 melted_corr_matr <- melt(corr_matr)
 dev.new()
@@ -270,13 +249,32 @@ print(
     x = Var1,
     y = Var2, fill = value
   )) +
-    geom_tile(color = "white", size = 0.5) +
+    geom_tile(color = "white", linewidth = 0.5) +
     geom_text(
-      aes(Var2,
-        Var1,
+      aes(Var1,
+        Var2,
         label = value
       ),
-      color = "white", size = 4
+      color = "white", linewidth = 4
     ) +
     scale_fill_gradientn(colors = color_palette)
 )
+
+linear_regression_data <- heatmap_data
+
+# Fit a multiple linear regression model
+model <- lm(formula =
+    linear_regression_data[, 10] ~
+    (linear_regression_data[, 1] +
+     linear_regression_data[, 2] +
+     linear_regression_data[, 3] +
+     linear_regression_data[, 4] +
+     linear_regression_data[, 5] +
+     linear_regression_data[, 6] +
+     linear_regression_data[, 7] +
+     linear_regression_data[, 8]) ,
+  data = linear_regression_data
+)
+
+# Print the summary of the model
+print(summary(model))
