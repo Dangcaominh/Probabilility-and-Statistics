@@ -11,6 +11,7 @@
 #               Vũ Hoàng Quân
 #               Lê Châu Nhật Minh
 # Brief:
+#    - This is part of our probability and statistics project
 #    - The aim of the study is to determine how much of the adjustment
 #    parameters in 3d printers affect the print quality, accuracy, strength.
 #    Where there are nine setting parameters, three measured output parameters.
@@ -224,12 +225,18 @@ data <- read.csv(".\\data.csv")
 #===============================================================================
 
 #-------------------------------------------------------------------------------
+#Vẽ bảng phân phối của ba biến output
+pairs(~roughness + elongation + fan_speed, data)
+
+#-------------------------------------------------------------------------------
 # Lọc dữ liệu
 filtered_data <- data.frame(
   data[1], data[2], data[3],
   data[4], data[5], data[6],
   data[7], data[8], data[9]
 )
+
+# Hiển thị kết quả
 View(filtered_data)
 
 #-------------------------------------------------------------------------------
@@ -238,16 +245,20 @@ print(apply(is.na(filtered_data), 2, which))
 
 #-------------------------------------------------------------------------------
 # Chuyển đổi biến
+# grid -> 0, honeycomb -> 1, abs -> 0, pla -> 1
+# Sử dụng hàm tự viết là replace_value
 converted_data <- replace_value(
   filtered_data,
   c("grid", "honeycomb", "abs", "pla"),
   c(0, 1, 0, 1)
 )
 
+# Hiển thị kết quả
 View(converted_data)
 
 #-------------------------------------------------------------------------------
 # Tính các giá trị thống kê mẫu
+# Sử dụng các hàm tự viết như get_col_name, mean, median, standard_derivation
 col.names <- get_col_name(converted_data)
 mean <- mean(converted_data)
 median <- median(converted_data)
@@ -255,6 +266,8 @@ min <- min(converted_data)
 max <- max(converted_data)
 sd <- standard_derivation(converted_data)
 table <- data.frame(col.names, mean, median, min, max, sd)
+
+# Hiển thị kết quả
 View(table)
 
 #===============================================================================
@@ -277,6 +290,7 @@ corr_matr <- round(cor(heatmap_data), 2)
 # Reshape ma trận về dạng thích hợp để đưa vào heatmap
 melted_corr_matr <- melt(corr_matr)
 
+#------------------------------------------------------------------------------
 # Tạo cửa sổ graphic mới
 dev.new()
 
@@ -310,6 +324,7 @@ hist(converted_data[, "layer_height"],
   main = "Histogram của layer height"
 )
 
+#------------------------------------------------------------------------------
 # Tạo cửa sổ graphic mới
 dev.new()
 
@@ -319,6 +334,7 @@ hist(converted_data[, "wall_thickness"],
   main = "Histogram của wall thickness"
 )
 
+#------------------------------------------------------------------------------
 # Tạo cửa sổ graphic mới
 dev.new()
 
@@ -328,6 +344,7 @@ hist(converted_data[, "infill_density"],
   main = "Histogram của infill density"
 )
 
+#------------------------------------------------------------------------------
 # Tạo cửa sổ graphic mới
 dev.new()
 
@@ -348,6 +365,7 @@ boxplot_data <- replace_value(
   c(0, 1, 0, 1)
 )
 
+#------------------------------------------------------------------------------
 # Tạo cửa sổ graphic mới
 dev.new()
 
@@ -357,6 +375,7 @@ boxplot(layer_height ~ roughness,
   main = "Boxplot cho layer height và roughness"
 )
 
+#-------------------------------------------------------------------------------
 # Tạo cửa sổ graphic mới
 dev.new()
 
@@ -389,7 +408,7 @@ linear_regression_data <- replace_value(
 
 #-------------------------------------------------------------------------------
 # Hồi quy tuyến tính đa biến cho biến roughness và 8 biến input
-model <- lm(formula =
+roughness_model <- lm(formula =
     roughness ~
     (layer_height +
      wall_thickness +
@@ -404,11 +423,28 @@ model <- lm(formula =
 
 # In ra kết quả
 print("Kết quả hồi quy tuyến tính đa biến cho biến roughness và 8 biến input")
-print(summary(model))
+print(summary(roughness_model))
+
+#-------------------------------------------------------------------------------
+# Điều chỉnh lại mô hình roughness, loại bỏ ba biến
+# wall_thickness, infill_density và infill_pattern
+adjusted_roughness_model <- lm(formula =
+    roughness ~
+    (layer_height +
+     nozzle_temperature +
+     bed_temperature +
+     print_speed +
+     material),
+  data = linear_regression_data
+)
+
+# In ra kết quả
+print("Điều chỉnh lại mô hình cho biến roughness")
+print(summary(adjusted_roughness_model))
 
 #-------------------------------------------------------------------------------
 # Hồi quy tuyến tính đa biến cho biến tension strength và 8 biến input
-model <- lm(formula =
+tension_strenght_model <- lm(formula =
     tension_strenght ~
     (layer_height +
      wall_thickness +
@@ -423,12 +459,29 @@ model <- lm(formula =
 
 # In ra kết quả
 print("Kết quả hồi quy tuyến tính đa biến cho biến tension strength
-và 8 biến input")
-print(summary(model))
+ và 8 biến input")
+print(summary(tension_strenght_model))
+
+#-------------------------------------------------------------------------------
+# Điều chỉnh lại mô hình tension strength, loại bỏ ba biến
+# infill_pattern, print_speed và material
+adjusted_tension_strenght_model <- lm(formula =
+    tension_strenght ~
+    (layer_height +
+     wall_thickness +
+     infill_density +
+     nozzle_temperature +
+     bed_temperature),
+  data = linear_regression_data
+)
+
+# In ra kết quả
+print("Điều chỉnh lại mô hình cho biến tension strength")
+print(summary(adjusted_tension_strenght_model))
 
 #-------------------------------------------------------------------------------
 # Hồi quy tuyến tính đa biến cho biến elongation và 8 biến input
-model <- lm(formula =
+elongation_model <- lm(formula =
     elongation ~
     (layer_height +
      wall_thickness +
@@ -443,4 +496,47 @@ model <- lm(formula =
 
 # In ra kết quả
 print("Kết quả hồi quy tuyến tính đa biến cho biến elongation và 8 biến input")
-print(summary(model))
+print(summary(elongation_model))
+
+#-------------------------------------------------------------------------------
+# Điều chỉnh lại mô hình elongation, loại bỏ ba biến
+# wall_thickness, infill_pattern, print_speed
+adjusted_elongation_model <- lm(formula =
+    elongation ~
+    (layer_height +
+     infill_density +
+     nozzle_temperature +
+     bed_temperature +
+     material),
+  data = linear_regression_data
+)
+
+# In ra kết quả
+print("Điều chỉnh lại mô hình cho biến elongation")
+print(summary(adjusted_elongation_model))
+
+#===============================================================================
+#============================= DỰ ĐOÁN SỐ LIỆU =================================
+#===============================================================================
+
+# Tạo test case
+test_data <- data.frame(
+  layer_height = 0.06,
+  wall_thickness = 8,
+  infill_density = 90,
+  infill_pattern = 1,
+  nozzle_temperature = 220,
+  bed_temperature = 80,
+  print_speed = 40,
+  material = 1,
+  fan_speed = 0
+)
+
+# In kết quả dự đoán roughness
+print(predict(adjusted_roughness_model, test_data))
+
+# In kết quả dự đoán tension strength
+print(predict(adjusted_tension_strenght_model, test_data))
+
+# In kết quả dự đoán elongation
+print(predict(adjusted_elongation_model, test_data))
