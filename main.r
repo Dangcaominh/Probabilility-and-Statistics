@@ -1,17 +1,6 @@
-options(scipen = 99)
-library(ggplot2)
-library(reshape2)
-# Vào dữ liệu
-data <- read.csv(".\\data.csv")
-
-#-------------------------------------------------------------------------------
-# Lọc dữ liệu
-data2 <- data.frame(
-  data[1], data[2], data[3],
-  data[5], data[6], data[7],
-  data[9]
-)
-View(data2)
+# User-defined function
+# Author: Dang Cao Minh
+# Date modified: 20/11/2023
 
 #-------------------------------------------------------------------------------
 # Chuyển kiểu dữ liệu data frame có một cột sang array
@@ -77,22 +66,6 @@ replace_value <- function(datainput, a, b) {
         logical = as.logical(datainput[, j]),
         datainput[, j]
       )
-    }
-  }
-  return(datainput)
-}
-
-#-------------------------------------------------------------------------------
-# Chuyển đổi giá trị ở tất cả các ô thành log của nó
-# Giá trị nhập vào: data frame
-# Giá trị trả về: data frame
-# Độ phức tạp: O(xy)
-log_conversion <- function(datainput) {
-  x <- nrow(datainput)
-  y <- ncol(datainput)
-  for (i in 1:x) {
-    for (j in 1:y) {
-      datainput[i, j] <- log(datainput[i, j])
     }
   }
   return(datainput)
@@ -197,6 +170,36 @@ max <- function(datainput) {
   }
   return(array)
 }
+
+#--------------------------------------------------------------------------
+#-----------------------------MAIN CODE------------------------------------
+#--------------------------------------------------------------------------
+
+options(scipen = 99)
+library(ggplot2)
+library(reshape2)
+# Vào dữ liệu
+data <- read.csv(".\\data.csv")
+
+#-------------------------------------------------------------------------------
+# Lọc dữ liệu
+data2 <- data.frame(
+  data[1], data[2], data[3],
+  data[4], data[5], data[6],
+  data[7], data[8], data[9],
+)
+View(data2)
+
+
+
+#-------------------------------------------------------------------------------
+# Lọc dữ liệu lần 2
+data2 <- data.frame(
+  data[1], data[2], data[3],
+  data[4], data[5], data[6],
+  data[7], data[8], data[9],
+)
+View(data2)
 
 data3 <- replace_value(data2, 0, 0.0000001)
 View(data3)
