@@ -1,6 +1,41 @@
-# User-defined function
+#===============================================================================
+# file: main.r
 # Author: Dang Cao Minh
+# Comment language: Vietnamese
+# Language: R
 # Date modified: 20/11/2023
+# Dataset file: data.csv
+# Contributors:
+#               Đoàn Minh Khôi
+#               Hồ Cảnh Minh
+#               Vũ Hoàng Quân
+#               Lê Châu Nhật Minh
+# Brief:
+#    - The aim of the study is to determine how much of the adjustment
+#    parameters in 3d printers affect the print quality, accuracy, strength.
+#    Where there are nine setting parameters, three measured output parameters.
+#    - Content
+#       + Setting Parameters:
+#           Layer Height (mm)
+#           Wall Thickness (mm)
+#           Infill Density (%)
+#           Infill Pattern ()
+#           Nozzle Temperature (Cº)
+#           Bed Temperature (Cº)
+#           Print Speed (mm/s)
+#           Material ()
+#           Fan Speed (%)
+#       + Output Parameters: (Measured)
+#           Roughness (µm)
+#           Tension (ultimate) Strenght (MPa)
+#           Elongation (%)
+
+
+#===============================================================================
+#===============================================================================
+#========================= USER-DEFINED FUNCTION ===============================
+#===============================================================================
+#===============================================================================
 
 #-------------------------------------------------------------------------------
 # Chuyển kiểu dữ liệu data frame có một cột sang array
@@ -12,7 +47,7 @@ df_to_array <- function(datainput) {
 }
 
 #-------------------------------------------------------------------------------
-# Lấy tên của các cột
+# Hàm lấy tên của các cột
 # Giá trị nhập vào: data frame
 # Giá trị trả về: vector
 # Độ phức tạp: O(y)
@@ -171,15 +206,22 @@ max <- function(datainput) {
   return(array)
 }
 
-#-------------------------------------------------------------------------------
-#-----------------------------MAIN CODE-----------------------------------------
-#-------------------------------------------------------------------------------
+#===============================================================================
+#===============================================================================
+#================================ MAIN CODE ====================================
+#===============================================================================
+#===============================================================================
 
 options(scipen = 99)
 library(ggplot2)
 library(reshape2)
+
 # Vào dữ liệu
 data <- read.csv(".\\data.csv")
+
+#===============================================================================
+#============================ TIỀN XỬ LÝ SỐ LIỆU ===============================
+#===============================================================================
 
 #-------------------------------------------------------------------------------
 # Lọc dữ liệu
@@ -215,8 +257,9 @@ sd <- standard_derivation(converted_data)
 table <- data.frame(col.names, mean, median, min, max, sd)
 View(table)
 
-#-------------------------------------------------------------------------------
-# Vẽ heatmap
+#===============================================================================
+#================================= VẼ HEATMAP ==================================
+#===============================================================================
 
 # Tạo dataframe cho heatmap
 heatmap_data <- replace_value(
@@ -254,8 +297,9 @@ print(
     scale_fill_gradientn(colors = color_palette)
 )
 
-#-------------------------------------------------------------------------------
-# Vẽ histogram
+#===============================================================================
+#============================== VẼ HISTOGRAM ===================================
+#===============================================================================
 
 # Tạo cửa sổ graphic mới
 dev.new()
@@ -293,8 +337,9 @@ hist(converted_data[, "material"],
   main = "Histogram của material"
 )
 
-#-------------------------------------------------------------------------------
-# Tạo boxplot
+#===============================================================================
+#=============================== TẠO BOXPLOT ===================================
+#===============================================================================
 
 # Tạo dataframe cho boxplot
 boxplot_data <- replace_value(
@@ -321,6 +366,7 @@ boxplot(layer_height ~ elongation,
   main = "Boxplot cho layer height và elongation"
 )
 
+#-------------------------------------------------------------------------------
 # Tạo cửa sổ graphic mới
 dev.new()
 
@@ -330,8 +376,9 @@ boxplot(wall_thickness ~ tension_strenght,
   main = "Boxplot cho wall thickness và tension strength"
 )
 
-#-------------------------------------------------------------------------------
-# Hồi quy tuyến tính đa biến
+#===============================================================================
+#======================= HỒI QUY TUYẾN TÍNH ĐA BIẾN ============================
+#===============================================================================
 
 # Tạo dataframe cho hồi quy tuyến tính
 linear_regression_data <- replace_value(
@@ -340,6 +387,7 @@ linear_regression_data <- replace_value(
   c(0, 1, 0, 1)
 )
 
+#-------------------------------------------------------------------------------
 # Hồi quy tuyến tính đa biến cho biến roughness và 8 biến input
 model <- lm(formula =
     roughness ~
@@ -358,6 +406,7 @@ model <- lm(formula =
 print("Kết quả hồi quy tuyến tính đa biến cho biến roughness và 8 biến input")
 print(summary(model))
 
+#-------------------------------------------------------------------------------
 # Hồi quy tuyến tính đa biến cho biến tension strength và 8 biến input
 model <- lm(formula =
     tension_strenght ~
@@ -377,7 +426,8 @@ print("Kết quả hồi quy tuyến tính đa biến cho biến tension strengt
 và 8 biến input")
 print(summary(model))
 
-# Hôi quy tuyến tính đa biến cho biến elongation và 8 biến input
+#-------------------------------------------------------------------------------
+# Hồi quy tuyến tính đa biến cho biến elongation và 8 biến input
 model <- lm(formula =
     elongation ~
     (layer_height +
@@ -394,6 +444,3 @@ model <- lm(formula =
 # In ra kết quả
 print("Kết quả hồi quy tuyến tính đa biến cho biến elongation và 8 biến input")
 print(summary(model))
-
-path <- R.home()
-print(path)
