@@ -1,4 +1,4 @@
-#===============================================================================
+#=============================================================
 # file: main.r
 # Author: Dang Cao Minh
 # Comment language: Vietnamese
@@ -12,9 +12,10 @@
 #               Lê Châu Nhật Minh
 # Brief:
 #    - This is part of our probability and statistics project
-#    - The aim of the study is to determine how much of the adjustment
-#    parameters in 3d printers affect the print quality, accuracy, strength.
-#    Where there are nine setting parameters, three measured output parameters.
+#    - The aim of the study is to determine how much of the
+#    adjustment parameters in 3d printers affect the print
+#    quality, accuracy, strength. Where there are nine setting
+#    parameters, three measured output parameters.
 #    - Content
 #       + Setting Parameters:
 #           Layer Height (mm)
@@ -32,13 +33,13 @@
 #           Elongation (%)
 
 
-#===============================================================================
-#===============================================================================
-#========================= USER-DEFINED FUNCTION ===============================
-#===============================================================================
-#===============================================================================
+#=============================================================
+#=============================================================
+#--============= USER-DEFINED FUNCTION =======================
+#=============================================================
+#=============================================================
 
-#-------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Chuyển kiểu dữ liệu data frame có một cột sang array
 # Giá trị nhập vào: data frame chỉ có một cột
 # Giá trị trả về: array
@@ -47,7 +48,7 @@ df_to_array <- function(datainput) {
   return(array(unlist(datainput)))
 }
 
-#-------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Hàm lấy tên của các cột
 # Giá trị nhập vào: data frame
 # Giá trị trả về: vector
@@ -57,9 +58,10 @@ get_col_name <- function(datainput) {
   return(col_names)
 }
 
-#-------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Nhập vào hai vector a và b độ dài n
-# Thay tất cả giá trị a[i] trong data frame thành b[i] với mọi i
+# Thay tất cả giá trị a[i] trong data frame
+# thành b[i] với mọi i
 # Giá trị nhập vào: data frame, hai vector
 # Giá trị trả về: data frame
 # Độ phức tạp: O(xyn)
@@ -107,7 +109,7 @@ replace_value <- function(datainput, a, b) {
   return(datainput)
 }
 
-#-------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Hàm tính trung bình
 # Giá trị nhập vào: data frame
 # Giá trị trả về: vector
@@ -125,7 +127,7 @@ mean <- function(datainput) {
   return(mean)
 }
 
-#-------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Hàm tính trung vị
 # Giá trị nhập vào: data frame
 # Giá trị trả về: vector
@@ -141,13 +143,14 @@ median <- function(datainput) {
       array[i] <- sorted_array[as.integer(x / 2) + 1]
     } else {
       array[i] <- (sorted_array[as.integer(x / 2)]) / 2
-      array[i] <- array[i] + (sorted_array[as.integer(x / 2) + 1]) / 2
+      array[i] <- array[i] +
+        (sorted_array[as.integer(x / 2) + 1]) / 2
     }
   }
   return(array)
 }
 
-#-------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Hàm tính độ lệch chuẩn
 # Giá trị nhập vào: data frame
 # Giá trị trả về: vector
@@ -163,7 +166,7 @@ standard_derivation <- function(datainput) {
   return(array)
 }
 
-#-------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Hàm tính min
 # Giá trị nhập vào: data frame
 # Giá trị trả về: vector
@@ -185,7 +188,7 @@ min <- function(datainput) {
   return(array)
 }
 
-#-------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Hàm tính max
 # Giá trị nhập vào: data frame
 # Giá trị trả về: vector
@@ -207,28 +210,33 @@ max <- function(datainput) {
   return(array)
 }
 
-#===============================================================================
-#===============================================================================
-#================================ MAIN CODE ====================================
-#===============================================================================
-#===============================================================================
+#=============================================================
+#=============================================================
+#====================== MAIN CODE ============================
+#=============================================================
+#=============================================================
 
 options(scipen = 99)
 library(ggplot2)
 library(reshape2)
 
 # Vào dữ liệu
-data <- read.csv(".\\data.csv")
+data <- read.csv("data.csv")
+View(data)
 
-#===============================================================================
-#============================ TIỀN XỬ LÝ SỐ LIỆU ===============================
-#===============================================================================
+# =============================================================
+# ================== TIỀN XỬ LÝ SỐ LIỆU =======================
+# =============================================================
 
-#-------------------------------------------------------------------------------
+# Hiển thị hai biến phân loại
+print(table(data$infill_pattern))
+print(table(data$material))
+
+#-------------------------------------------------------------
 #Vẽ bảng phân phối của ba biến output
 pairs(~roughness + elongation + fan_speed, data)
 
-#-------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Lọc dữ liệu
 filtered_data <- data.frame(
   data[1], data[2], data[3],
@@ -239,11 +247,11 @@ filtered_data <- data.frame(
 # Hiển thị kết quả
 View(filtered_data)
 
-#-------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Kiểm tra dữ liệu bị khuyết
 print(apply(is.na(filtered_data), 2, which))
 
-#-------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Chuyển đổi biến
 # grid -> 0, honeycomb -> 1, abs -> 0, pla -> 1
 # Sử dụng hàm tự viết là replace_value
@@ -256,9 +264,10 @@ converted_data <- replace_value(
 # Hiển thị kết quả
 View(converted_data)
 
-#-------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Tính các giá trị thống kê mẫu
-# Sử dụng các hàm tự viết như get_col_name, mean, median, standard_derivation
+# Sử dụng các hàm tự viết như get_col_name, mean,
+# median, standard_derivation
 col.names <- get_col_name(converted_data)
 mean <- mean(converted_data)
 median <- median(converted_data)
@@ -270,9 +279,9 @@ table <- data.frame(col.names, mean, median, min, max, sd)
 # Hiển thị kết quả
 View(table)
 
-#===============================================================================
-#================================= VẼ HEATMAP ==================================
-#===============================================================================
+#=============================================================
+#====================== VẼ HEATMAP ===========================
+#=============================================================
 
 # Tạo dataframe cho heatmap
 heatmap_data <- replace_value(
@@ -284,13 +293,13 @@ heatmap_data <- replace_value(
 # Tạo dải màu cho heatmap
 color_palette <- c("#00ffff", "#8877ff", "#ff00ff")
 
-# Tạo ma trận tương quan và làm tròn các hệ số đến hai số sau dấu phẩy
+# Tạo ma trận tương quan và làm tròn các hệ số
 corr_matr <- round(cor(heatmap_data), 2)
 
 # Reshape ma trận về dạng thích hợp để đưa vào heatmap
 melted_corr_matr <- melt(corr_matr)
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Tạo cửa sổ graphic mới
 dev.new()
 
@@ -311,9 +320,9 @@ print(
     scale_fill_gradientn(colors = color_palette)
 )
 
-#===============================================================================
-#============================== VẼ HISTOGRAM ===================================
-#===============================================================================
+#=============================================================
+#====================== VẼ HISTOGRAM =========================
+#=============================================================
 
 # Tạo cửa sổ graphic mới
 dev.new()
@@ -324,7 +333,7 @@ hist(converted_data[, "layer_height"],
   main = "Histogram của layer height"
 )
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Tạo cửa sổ graphic mới
 dev.new()
 
@@ -334,7 +343,7 @@ hist(converted_data[, "wall_thickness"],
   main = "Histogram của wall thickness"
 )
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Tạo cửa sổ graphic mới
 dev.new()
 
@@ -344,7 +353,7 @@ hist(converted_data[, "infill_density"],
   main = "Histogram của infill density"
 )
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Tạo cửa sổ graphic mới
 dev.new()
 
@@ -354,9 +363,9 @@ hist(converted_data[, "material"],
   main = "Histogram của material"
 )
 
-#===============================================================================
-#=============================== TẠO BOXPLOT ===================================
-#===============================================================================
+#=============================================================
+#====================== TẠO BOXPLOT ==========================
+#=============================================================
 
 # Tạo dataframe cho boxplot
 boxplot_data <- replace_value(
@@ -365,7 +374,7 @@ boxplot_data <- replace_value(
   c(0, 1, 0, 1)
 )
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Tạo cửa sổ graphic mới
 dev.new()
 
@@ -375,7 +384,7 @@ boxplot(layer_height ~ roughness,
   main = "Boxplot cho layer height và roughness"
 )
 
-#-------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Tạo cửa sổ graphic mới
 dev.new()
 
@@ -385,7 +394,7 @@ boxplot(layer_height ~ elongation,
   main = "Boxplot cho layer height và elongation"
 )
 
-#-------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Tạo cửa sổ graphic mới
 dev.new()
 
@@ -395,9 +404,9 @@ boxplot(wall_thickness ~ tension_strenght,
   main = "Boxplot cho wall thickness và tension strength"
 )
 
-#===============================================================================
-#======================= HỒI QUY TUYẾN TÍNH ĐA BIẾN ============================
-#===============================================================================
+#=============================================================
+#=============== HỒI QUY TUYẾN TÍNH ĐA BIẾN ==================
+#=============================================================
 
 # Tạo dataframe cho hồi quy tuyến tính
 linear_regression_data <- replace_value(
@@ -406,8 +415,8 @@ linear_regression_data <- replace_value(
   c(0, 1, 0, 1)
 )
 
-#-------------------------------------------------------------------------------
-# Hồi quy tuyến tính đa biến cho biến roughness và 8 biến input
+#-------------------------------------------------------------
+# Hồi quy cho biến roughness và 8 biến input
 roughness_model <- lm(formula =
     roughness ~
     (layer_height +
@@ -422,10 +431,13 @@ roughness_model <- lm(formula =
 )
 
 # In ra kết quả
-print("Kết quả hồi quy tuyến tính đa biến cho biến roughness và 8 biến input")
+print(cat(
+  "Kết quả hồi quy tuyến tính đa biến cho",
+  "biến roughness và 8 biến input"
+))
 print(summary(roughness_model))
 
-#-------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Điều chỉnh lại mô hình roughness, loại bỏ ba biến
 # wall_thickness, infill_density và infill_pattern
 adjusted_roughness_model <- lm(formula =
@@ -442,8 +454,8 @@ adjusted_roughness_model <- lm(formula =
 print("Điều chỉnh lại mô hình cho biến roughness")
 print(summary(adjusted_roughness_model))
 
-#-------------------------------------------------------------------------------
-# Hồi quy tuyến tính đa biến cho biến tension strength và 8 biến input
+#-------------------------------------------------------------
+# Hồi quy cho biến tension strength và 8 biến input
 tension_strenght_model <- lm(formula =
     tension_strenght ~
     (layer_height +
@@ -458,11 +470,13 @@ tension_strenght_model <- lm(formula =
 )
 
 # In ra kết quả
-print("Kết quả hồi quy tuyến tính đa biến cho biến tension strength
- và 8 biến input")
+print(cat(
+  "Kết quả hồi quy tuyến tính đa biến cho biến",
+  "tension strength và 8 biến input"
+))
 print(summary(tension_strenght_model))
 
-#-------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Điều chỉnh lại mô hình tension strength, loại bỏ ba biến
 # infill_pattern, print_speed và material
 adjusted_tension_strenght_model <- lm(formula =
@@ -479,8 +493,8 @@ adjusted_tension_strenght_model <- lm(formula =
 print("Điều chỉnh lại mô hình cho biến tension strength")
 print(summary(adjusted_tension_strenght_model))
 
-#-------------------------------------------------------------------------------
-# Hồi quy tuyến tính đa biến cho biến elongation và 8 biến input
+#-------------------------------------------------------------
+# Hồi quy cho biến elongation và 8 biến input
 elongation_model <- lm(formula =
     elongation ~
     (layer_height +
@@ -495,10 +509,13 @@ elongation_model <- lm(formula =
 )
 
 # In ra kết quả
-print("Kết quả hồi quy tuyến tính đa biến cho biến elongation và 8 biến input")
+print(cat(
+  "Kết quả hồi quy tuyến tính đa biến cho",
+  "biến elongation và 8 biến input"
+))
 print(summary(elongation_model))
 
-#-------------------------------------------------------------------------------
+#-------------------------------------------------------------
 # Điều chỉnh lại mô hình elongation, loại bỏ ba biến
 # wall_thickness, infill_pattern, print_speed
 adjusted_elongation_model <- lm(formula =
@@ -515,9 +532,9 @@ adjusted_elongation_model <- lm(formula =
 print("Điều chỉnh lại mô hình cho biến elongation")
 print(summary(adjusted_elongation_model))
 
-#===============================================================================
-#============================= DỰ ĐOÁN SỐ LIỆU =================================
-#===============================================================================
+#=============================================================
+#==================== DỰ ĐOÁN SỐ LIỆU ========================
+#=============================================================
 
 # Tạo test case
 test_data <- data.frame(
