@@ -232,10 +232,14 @@ View(data)
 #Vẽ bảng phân phối của ba biến output
 pairs(~roughness + elongation + fan_speed, data)
 
+#-------------------------------------------------------------
 # Lọc các outlier
 # Read the data from the CSV file
-outlier_finding_data <- read.csv("data.csv", stringsAsFactors = FALSE)
+outlier_finding_data <- read.csv("data.csv",
+  stringsAsFactors = FALSE
+)
 
+#-------------------------------------------------------------
 # Tìm outliers sử dụng phương pháp Turkey
 numeric_columns <- sapply(outlier_finding_data, is.numeric)
 numeric_data <- outlier_finding_data[, numeric_columns]
@@ -253,7 +257,11 @@ for (i in seq_along(outliers)) {
   variable_name <- names(outliers)[i]
   variable_outliers <- outliers[[i]]
   if (length(variable_outliers) > 0) {
-    cat("Outliers cho", variable_name, ":", variable_outliers, "\n")
+    cat(
+      "Outliers cho",
+      variable_name, ":",
+      variable_outliers, "\n"
+    )
   } else {
     cat("Không có outliers cho", variable_name, "\n")
   }
@@ -276,7 +284,8 @@ outlier_unfiltered_data <- data[data$print_speed != 120, ]
 View(outlier_unfiltered_data)
 
 # Lọc các outliers từ filtered_data
-outlier_filtered_data <- filtered_data[filtered_data$print_speed != 120, ]
+outlier_filtered_data <-
+  filtered_data[filtered_data$print_speed != 120, ]
 View(outlier_filtered_data)
 
 #-------------------------------------------------------------
