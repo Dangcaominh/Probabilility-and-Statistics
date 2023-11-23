@@ -232,8 +232,35 @@ View(data)
 #Vẽ bảng phân phối của ba biến output
 pairs(~roughness + elongation + fan_speed, data)
 
+# Lọc các outlier
+# Read the data from the CSV file
+outlier_finding_data <- read.csv("data.csv", stringsAsFactors = FALSE)
+
+# Tìm outliers sử dụng phương pháp Turkey
+numeric_columns <- sapply(outlier_finding_data, is.numeric)
+numeric_data <- outlier_finding_data[, numeric_columns]
+outliers <- sapply(numeric_data, function(x) {
+  q1 <- quantile(x, 0.25)
+  q3 <- quantile(x, 0.75)
+  iqr <- q3 - q1
+  lower_bound <- q1 - 1.5 * iqr
+  upper_bound <- q3 + 1.5 * iqr
+  x[x < lower_bound | x > upper_bound]
+})
+
+# In ra outliers cho mỗi biến
+for (i in seq_along(outliers)) {
+  variable_name <- names(outliers)[i]
+  variable_outliers <- outliers[[i]]
+  if (length(variable_outliers) > 0) {
+    cat("Outliers cho", variable_name, ":", variable_outliers, "\n")
+  } else {
+    cat("Không có outliers cho", variable_name, "\n")
+  }
+}
+
 #-------------------------------------------------------------
-# Lọc dữ liệu
+# Lọc các biến output
 filtered_data <- data.frame(
   data[1], data[2], data[3],
   data[4], data[5], data[6],
@@ -244,15 +271,24 @@ filtered_data <- data.frame(
 View(filtered_data)
 
 #-------------------------------------------------------------
+# Lọc các outliers từ data
+outlier_unfiltered_data <- data[data$print_speed != 120, ]
+View(outlier_unfiltered_data)
+
+# Lọc các outliers từ filtered_data
+outlier_filtered_data <- filtered_data[filtered_data$print_speed != 120, ]
+View(outlier_filtered_data)
+
+#-------------------------------------------------------------
 # Kiểm tra dữ liệu bị khuyết
-print(apply(is.na(filtered_data), 2, which))
+print(apply(is.na(outlier_filtered_data), 2, which))
 
 #-------------------------------------------------------------
 # Chuyển đổi biến
 # grid -> 0, honeycomb -> 1, abs -> 0, pla -> 1
 # Sử dụng hàm tự viết là replace_value
 converted_data <- replace_value(
-  filtered_data,
+  outlier_filtered_data,
   c("grid", "honeycomb", "abs", "pla"),
   c(0, 1, 0, 1)
 )
@@ -277,8 +313,8 @@ View(table)
 
 #-------------------------------------------------------------
 # Hiển thị hai biến phân loại
-print(table(data$infill_pattern))
-print(table(data$material))
+print(table(outlier_unfiltered_data$infill_pattern))
+print(table(outlier_unfiltered_data$material))
 
 #=============================================================
 #====================== VẼ HEATMAP ===========================
@@ -286,7 +322,7 @@ print(table(data$material))
 
 # Tạo dataframe cho heatmap
 heatmap_data <- replace_value(
-  data,
+  outlier_unfiltered_data,
   c("grid", "honeycomb", "abs", "pla"),
   c(0, 1, 0, 1)
 )
@@ -325,7 +361,8 @@ print(
       ),
       color = "white", size = 4
     ) +
-    scale_fill_gradientn(colors = color_palette)
+    scale_fill_gradientn(colors = color_palette) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 )
 
 #=============================================================
@@ -377,7 +414,7 @@ hist(converted_data[, "material"],
 
 # Tạo dataframe cho boxplot
 boxplot_data <- replace_value(
-  data,
+  outlier_unfiltered_data,
   c("grid", "honeycomb", "abs", "pla"),
   c(0, 1, 0, 1)
 )
@@ -418,7 +455,7 @@ boxplot(wall_thickness ~ tension_strenght,
 
 # Tạo dataframe cho hồi quy tuyến tính
 linear_regression_data <- replace_value(
-  data,
+  outlier_unfiltered_data,
   c("grid", "honeycomb", "abs", "pla"),
   c(0, 1, 0, 1)
 )
