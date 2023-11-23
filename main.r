@@ -155,7 +155,7 @@ median <- function(datainput) {
 # Giá trị nhập vào: data frame
 # Giá trị trả về: vector
 # Độ phức tạp: O(xy)
-standard_derivation <- function(datainput) {
+standard_deviation <- function(datainput) {
   # Trả về độ lệch chuẩn của từng cột
   y <- ncol(datainput)
   array <- vector("numeric", y)
@@ -228,9 +228,6 @@ View(data)
 # ================== TIỀN XỬ LÝ SỐ LIỆU =======================
 # =============================================================
 
-# Hiển thị hai biến phân loại
-print(table(data$infill_pattern))
-print(table(data$material))
 #-------------------------------------------------------------
 #Vẽ bảng phân phối của ba biến output
 pairs(~roughness + elongation + fan_speed, data)
@@ -266,17 +263,22 @@ View(converted_data)
 #-------------------------------------------------------------
 # Tính các giá trị thống kê mẫu
 # Sử dụng các hàm tự viết như get_col_name, mean,
-# median, standard_derivation
+# median, standard_deviation
 col.names <- get_col_name(converted_data)
 mean <- mean(converted_data)
 median <- median(converted_data)
 min <- min(converted_data)
 max <- max(converted_data)
-sd <- standard_derivation(converted_data)
+sd <- standard_deviation(converted_data)
 table <- data.frame(col.names, mean, median, min, max, sd)
 
 # Hiển thị kết quả
 View(table)
+
+#-------------------------------------------------------------
+# Hiển thị hai biến phân loại
+print(table(data$infill_pattern))
+print(table(data$material))
 
 #=============================================================
 #====================== VẼ HEATMAP ===========================
@@ -293,10 +295,17 @@ heatmap_data <- replace_value(
 color_palette <- c("#00ffff", "#8877ff", "#ff00ff")
 
 # Tạo ma trận tương quan và làm tròn các hệ số
+# đến hai số sau dấu phẩy
 corr_matr <- round(cor(heatmap_data), 2)
+
+# Hiển thị ma trận tương quan
+View(corr_matr)
 
 # Reshape ma trận về dạng thích hợp để đưa vào heatmap
 melted_corr_matr <- melt(corr_matr)
+
+# Hiển thị ma trận tương quan dạng melted
+View(melted_corr_matr)
 
 #-------------------------------------------------------------
 # Tạo cửa sổ graphic mới
