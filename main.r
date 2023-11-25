@@ -362,16 +362,22 @@ print(
     x = Var1,
     y = Var2, fill = value
   )) +
-    geom_tile(color = "white", linewidth = 0.5) +
+    geom_tile(color = "white", linewidth = 1) +
     geom_text(
       aes(Var1,
         Var2,
         label = value
       ),
-      color = "white", size = 4
+      color = "#ffff00", size = 5
     ) +
     scale_fill_gradientn(colors = color_palette) +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    theme(
+      axis.text = element_text(size = 12),
+      axis.title = element_blank(),
+      legend.text = element_text(size = 12),
+      legend.title = element_blank()
+    )
 )
 
 #=============================================================
@@ -485,7 +491,7 @@ roughness_model <- lm(formula =
 )
 
 # In ra kết quả
-print(cat(
+print(paste(
   "Kết quả hồi quy tuyến tính đa biến cho",
   "biến roughness và 8 biến input"
 ))
@@ -524,22 +530,24 @@ tension_strenght_model <- lm(formula =
 )
 
 # In ra kết quả
-print(cat(
+print(paste(
   "Kết quả hồi quy tuyến tính đa biến cho biến",
   "tension strength và 8 biến input"
 ))
 print(summary(tension_strenght_model))
 
 #-------------------------------------------------------------
-# Điều chỉnh lại mô hình tension strength, loại bỏ ba biến
-# infill_pattern, print_speed và material
+# Điều chỉnh lại mô hình tension strength, loại bỏ biến
+# infill_pattern
 adjusted_tension_strenght_model <- lm(formula =
     tension_strenght ~
     (layer_height +
      wall_thickness +
      infill_density +
      nozzle_temperature +
-     bed_temperature),
+     bed_temperature +
+     print_speed +
+     material),
   data = linear_regression_data
 )
 
@@ -563,18 +571,19 @@ elongation_model <- lm(formula =
 )
 
 # In ra kết quả
-print(cat(
+print(paste(
   "Kết quả hồi quy tuyến tính đa biến cho",
   "biến elongation và 8 biến input"
 ))
 print(summary(elongation_model))
 
 #-------------------------------------------------------------
-# Điều chỉnh lại mô hình elongation, loại bỏ ba biến
-# wall_thickness, infill_pattern, print_speed
+# Điều chỉnh lại mô hình elongation, loại bỏ hai biến
+# infill_pattern, print_speed
 adjusted_elongation_model <- lm(formula =
     elongation ~
     (layer_height +
+     wall_thickness +
      infill_density +
      nozzle_temperature +
      bed_temperature +
