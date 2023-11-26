@@ -606,7 +606,7 @@ test_data <- data.frame(
   infill_density = 90,
   infill_pattern = 1,
   nozzle_temperature = 220,
-  bed_temperature = 80,
+  bed_temperature = 60,
   print_speed = 40,
   material = 1,
   fan_speed = 0
