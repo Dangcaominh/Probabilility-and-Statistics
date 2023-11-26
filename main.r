@@ -40,15 +40,6 @@
 #=============================================================
 
 #-------------------------------------------------------------
-# Chuyển kiểu dữ liệu data frame có một cột sang array
-# Giá trị nhập vào: data frame chỉ có một cột
-# Giá trị trả về: array
-# Độ phức tạp: O(x)
-df_to_array <- function(datainput) {
-  return(array(unlist(datainput)))
-}
-
-#-------------------------------------------------------------
 # Hàm lấy tên của các cột
 # Giá trị nhập vào: data frame
 # Giá trị trả về: vector
@@ -138,7 +129,7 @@ median <- function(datainput) {
   y <- ncol(datainput)
   array <- vector("numeric", y)
   for (i in 1:y) {
-    sorted_array <- sort(df_to_array(datainput[i]))
+    sorted_array <- sort(datainput[, i])
     if (x %% 2 == 1) {
       array[i] <- sorted_array[as.integer(x / 2) + 1]
     } else {
@@ -160,8 +151,8 @@ standard_deviation <- function(datainput) {
   y <- ncol(datainput)
   array <- vector("numeric", y)
   for (j in 1:y) {
-    array[j] <- sqrt(mean(df_to_array(datainput[j]^2)) -
-                       mean(df_to_array(datainput[j]))^2)
+    array[j] <- sqrt(mean(datainput[, j]^2) -
+                       mean(datainput[, j])^2)
   }
   return(array)
 }
